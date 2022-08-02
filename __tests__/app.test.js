@@ -3,6 +3,7 @@ const request = require("supertest");
 const db = require("../db/connection.js");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data");
+const { convertTimestampToDate } = require("../db/seeds/utils");
 
 afterAll(() => db.end());
 
@@ -20,7 +21,7 @@ describe("ALL /*", () => {
 });
 
 describe("GET /api/topics", () => {
-  test("status: 200 responds with an array of topic objects containing description an slug properties", () => {
+  test("Status: 200 responds with an array of topic objects containing description an slug properties", () => {
     return request(app)
       .get("/api/topics")
       .expect(200)
@@ -29,6 +30,42 @@ describe("GET /api/topics", () => {
         expect(Object.keys(response.body.topics[0])).toEqual(
           expect.arrayContaining(["description", "slug"])
         );
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id", () => {
+  test("Status:200 responds with article object containing author, title, article_id, body, created_at and votes properties", () => {
+    return request(app)
+      .get("/api/articles/1")
+      .expect(200)
+      .then(({ body }) => {
+        const article = {
+          article_id: 1,
+          title: expect.any(String),
+          topic: expect.any(String),
+          author: expect.any(String),
+          body: expect.any(String),
+          created_at: expect.any(String),
+          votes: expect.any(Number),
+        };
+        expect(body.article).toMatchObject(article);
+      });
+  });
+  test("Status:404 sends an appropriate and error message when given a valid but non-existent id", () => {
+    return request(app)
+      .get("/api/articles/777")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid article id");
+      });
+  });
+  test("Status:400 sends an appropriate and error message when given an invalid id", () => {
+    return request(app)
+      .get("/api/articles/invalid_id")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Bad request");
       });
   });
 });
