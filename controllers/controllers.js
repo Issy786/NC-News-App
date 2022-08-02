@@ -2,6 +2,7 @@ const {
   selectTopics,
   selectArticlesById,
   updateArticleById,
+  selectUsers,
 } = require("../models/models");
 
 exports.getTopics = (req, res, next) => {
@@ -16,7 +17,6 @@ exports.getArticlesById = (req, res, next) => {
   const { article_id } = req.params;
   selectArticlesById(article_id)
     .then((article) => {
-      console.log(article, "1");
       res.status(200).send({ article });
     })
     .catch(next);
@@ -25,10 +25,17 @@ exports.getArticlesById = (req, res, next) => {
 exports.patchArticlesById = (req, res, next) => {
   const { article_id } = req.params;
   const { inc_votes } = req.body;
-  console.log(req.body, "1");
   updateArticleById(article_id, inc_votes)
     .then((article) => {
       res.status(200).send({ article });
+    })
+    .catch(next);
+};
+
+exports.getUsers = (req, res, next) => {
+  selectUsers()
+    .then((users) => {
+      res.status(200).send({ users });
     })
     .catch(next);
 };

@@ -65,12 +65,14 @@ describe("GET /api/articles/:article_id", () => {
       .get("/api/articles/invalid_id")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request");
+        expect(body.msg).toBe(
+          "Invalid ID request. Please enter a valid ID Number"
+        );
       });
   });
 });
 
-describe.only("PATCH /api/articles/:article_id", () => {
+describe("PATCH /api/articles/:article_id", () => {
   test("Status:200 request body accepts an object with a key/value pair which holds the number to increment the votes property and returns the updated object", () => {
     const requestObj = { inc_votes: 1 };
     return request(app)
@@ -80,10 +82,10 @@ describe.only("PATCH /api/articles/:article_id", () => {
       .then(({ body }) => {
         expect(body.article).toMatchObject({
           article_id: 1,
-          title: expect.any(String),
-          topic: expect.any(String),
-          author: expect.any(String),
-          body: expect.any(String),
+          title: "Living in the shadow of a great man",
+          topic: "mitch",
+          author: "butter_bridge",
+          body: "I find this existence challenging",
           created_at: expect.any(String),
           votes: 101,
         });
@@ -104,7 +106,23 @@ describe.only("PATCH /api/articles/:article_id", () => {
       .get("/api/articles/invalid_id")
       .expect(400)
       .then(({ body }) => {
-        expect(body.msg).toBe("Bad request");
+        expect(body.msg).toBe(
+          "Invalid ID request. Please enter a valid ID Number"
+        );
+      });
+  });
+});
+
+describe("GET /api/users", () => {
+  test("Status: 200 responds with an array of user objects containing username, name and avatar_url properties", () => {
+    return request(app)
+      .get("/api/users")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.users).toEqual(expect.any(Array));
+        expect(Object.keys(body.users[0])).toEqual(
+          expect.arrayContaining(["username", "name", "avatar_url"])
+        );
       });
   });
 });

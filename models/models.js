@@ -25,11 +25,16 @@ exports.updateArticleById = (article_id, inc_votes) => {
       [inc_votes, article_id]
     )
     .then(({ rows }) => {
-      console.log(rows);
       if (rows.length < 1) {
         return Promise.reject({ status: 404, msg: "Invalid article Id" });
       } else {
         return rows[0];
       }
     });
+};
+
+exports.selectUsers = () => {
+  return db.query("SELECT * FROM users;").then(({ rows }) => {
+    return rows;
+  });
 };
