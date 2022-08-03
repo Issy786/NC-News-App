@@ -8,7 +8,10 @@ exports.selectTopics = () => {
 
 exports.selectArticlesById = (article_id) => {
   return db
-    .query("SELECT * FROM articles WHERE article_id = $1;", [article_id])
+    .query(
+      "SELECT articles.*, (SELECT COUNT(*) FROM comments WHERE comments.article_id = articles.article_id) AS comment_count FROM articles WHERE article_id = $1;",
+      [article_id]
+    )
     .then(({ rows }) => {
       if (rows.length < 1) {
         return Promise.reject({ status: 404, msg: "Invalid article id" });
