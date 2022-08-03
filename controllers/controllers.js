@@ -1,9 +1,8 @@
 const {
   selectTopics,
-  selectArticlesById,
   updateArticleById,
   selectUsers,
-  selectArticles,
+  selectArticleById,
 } = require("../models/models");
 
 exports.getTopics = (req, res, next) => {
@@ -14,9 +13,9 @@ exports.getTopics = (req, res, next) => {
     .catch(next);
 };
 
-exports.getArticlesById = (req, res, next) => {
+exports.getArticleById = (req, res, next) => {
   const { article_id } = req.params;
-  selectArticlesById(article_id)
+  selectArticleById(article_id)
     .then((article) => {
       res.status(200).send({ article });
     })
@@ -37,14 +36,6 @@ exports.getUsers = (req, res, next) => {
   selectUsers()
     .then((users) => {
       res.status(200).send({ users });
-    })
-    .catch(next);
-};
-
-exports.getArticles = (req, res, next) => {
-  selectArticles()
-    .then((articles) => {
-      res.status(200).send({ articles });
     })
     .catch(next);
 };

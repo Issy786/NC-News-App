@@ -6,10 +6,10 @@ exports.selectTopics = () => {
   });
 };
 
-exports.selectArticlesById = (article_id) => {
+exports.selectArticleById = (article_id) => {
   return db
     .query(
-      "SELECT articles.*, (SELECT COUNT(*) FROM comments WHERE comments.article_id = articles.article_id) AS comment_count FROM articles WHERE article_id = $1;",
+      "SELECT articles.*, (SELECT COUNT(*) :: INT FROM comments WHERE comments.article_id = articles.article_id) AS comment_count FROM articles WHERE article_id = $1;",
       [article_id]
     )
     .then(({ rows }) => {

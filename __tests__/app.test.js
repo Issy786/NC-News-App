@@ -48,7 +48,7 @@ describe("GET /api/articles/:article_id", () => {
           body: expect.any(String),
           created_at: expect.any(String),
           votes: expect.any(Number),
-          comment_count: expect.any(String),
+          comment_count: 11,
         };
         expect(body.article).toMatchObject(article);
       });
@@ -118,12 +118,19 @@ describe("GET /api/users", () => {
   test("Status: 200 responds with an array of user objects containing username, name and avatar_url properties", () => {
     return request(app)
       .get("/api/users")
-      .expect(200)
       .then(({ body }) => {
-        expect(body.users).toEqual(expect.any(Array));
-        expect(Object.keys(body.users[0])).toEqual(
-          expect.arrayContaining(["username", "name", "avatar_url"])
-        );
+        const { users } = body;
+        expect(users).toBeInstanceOf(Array);
+        expect(users).toHaveLength(4);
+        users.forEach((user) => {
+          expect(user).toEqual(
+            expect.objectContaining({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          );
+        });
       });
   });
 });
