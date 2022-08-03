@@ -6,7 +6,7 @@ exports.selectTopics = () => {
   });
 };
 
-exports.selectArticlesById = (article_id) => {
+exports.selectArticleById = (article_id) => {
   return db
     .query(
       "SELECT articles.*, (SELECT COUNT(*) FROM comments WHERE comments.article_id = articles.article_id) AS comment_count FROM articles WHERE article_id = $1;",
@@ -40,4 +40,15 @@ exports.selectUsers = () => {
   return db.query("SELECT * FROM users;").then(({ rows }) => {
     return rows;
   });
+};
+
+exports.selectArticles = () => {
+  return db
+    .query(
+      "SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, (SELECT COUNT(*) FROM comments WHERE comments.article_id = articles.article_id) AS comment_count FROM articles;"
+    )
+    .then(({ rows }) => {
+      console.log(rows);
+      return rows;
+    });
 };

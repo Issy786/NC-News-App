@@ -48,7 +48,7 @@ describe("GET /api/articles/:article_id", () => {
           body: expect.any(String),
           created_at: expect.any(String),
           votes: expect.any(Number),
-          comment_count: expect.any(String),
+          comment_count: "11",
         };
         expect(body.article).toMatchObject(article);
       });
@@ -123,6 +123,28 @@ describe("GET /api/users", () => {
         expect(body.users).toEqual(expect.any(Array));
         expect(Object.keys(body.users[0])).toEqual(
           expect.arrayContaining(["username", "name", "avatar_url"])
+        );
+      });
+  });
+});
+
+describe("GET /api/articles", () => {
+  test("Status: 200 responds with an array of article objects containing author, title, article_id, topic, created_at, votes and comment_count", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toEqual(expect.any(Array));
+        expect(Object.keys(body.articles[0])).toEqual(
+          expect.arrayContaining([
+            "article_id",
+            "title",
+            "topic",
+            "author",
+            "created_at",
+            "votes",
+            "comment_count",
+          ])
         );
       });
   });
