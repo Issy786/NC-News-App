@@ -45,7 +45,7 @@ exports.selectUsers = () => {
 exports.selectArticles = () => {
   return db
     .query(
-      "SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, (SELECT COUNT(*) FROM comments WHERE comments.article_id = articles.article_id) AS comment_count FROM articles;"
+      "SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, (SELECT COUNT(*) :: INT FROM comments WHERE comments.article_id = articles.article_id) AS comment_count FROM articles;"
     )
     .then(({ rows }) => {
       return rows;
@@ -58,6 +58,7 @@ exports.selectCommentsByArticleId = (article_id) => {
       article_id,
     ])
     .then(({ rows }) => {
+      console.log(rows);
       return rows;
     });
 };

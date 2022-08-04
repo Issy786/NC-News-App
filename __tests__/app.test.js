@@ -142,17 +142,20 @@ describe("GET /api/articles", () => {
       .expect(200)
       .then(({ body }) => {
         expect(body.articles).toEqual(expect.any(Array));
-        expect(Object.keys(body.articles[0])).toEqual(
-          expect.arrayContaining([
-            "article_id",
-            "title",
-            "topic",
-            "author",
-            "created_at",
-            "votes",
-            "comment_count",
-          ])
-        );
+        expect(body.articles).toHaveLength(12);
+        body.articles.forEach((article) => {
+          expect(article).toEqual(
+            expect.objectContaining({
+              article_id: expect.any(Number),
+              title: expect.any(String),
+              topic: expect.any(String),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              comment_count: expect.any(Number),
+            })
+          );
+        });
       });
   });
 });

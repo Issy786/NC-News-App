@@ -60,6 +60,7 @@ exports.getcommentsByArticleId = (req, res, next) => {
     selectArticleByIdForComments(article_id),
   ])
     .then(([comments]) => {
+      console.log(comments);
       res.status(200).send({ comments });
     })
     .catch(next);
