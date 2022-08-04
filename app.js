@@ -4,6 +4,8 @@ const {
   patchArticlesById,
   getUsers,
   getArticleById,
+  getArticles,
+  getcommentsByArticleId,
 } = require("./controllers/controllers");
 const app = express();
 
@@ -11,8 +13,10 @@ app.use(express.json());
 
 app.get("/api/topics", getTopics);
 
+app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticleById);
 app.patch("/api/articles/:article_id", patchArticlesById);
+app.get("/api/articles/:article_id/comments", getcommentsByArticleId);
 
 app.get("/api/users", getUsers);
 

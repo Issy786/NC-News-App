@@ -1,8 +1,12 @@
+const comments = require("../db/data/test-data/comments");
 const {
   selectTopics,
   updateArticleById,
   selectUsers,
   selectArticleById,
+  selectArticles,
+  selectCommentsByArticleId,
+  selectArticleByIdForComments,
 } = require("../models/models");
 
 exports.getTopics = (req, res, next) => {
@@ -36,6 +40,27 @@ exports.getUsers = (req, res, next) => {
   selectUsers()
     .then((users) => {
       res.status(200).send({ users });
+    })
+    .catch(next);
+};
+
+exports.getArticles = (req, res, next) => {
+  selectArticles()
+    .then((articles) => {
+      res.status(200).send({ articles });
+    })
+    .catch(next);
+};
+
+exports.getcommentsByArticleId = (req, res, next) => {
+  const { article_id } = req.params;
+
+  Promise.all([
+    selectCommentsByArticleId(article_id),
+    selectArticleByIdForComments(article_id),
+  ])
+    .then(([comments]) => {
+      res.status(200).send({ comments });
     })
     .catch(next);
 };

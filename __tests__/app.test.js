@@ -134,3 +134,75 @@ describe("GET /api/users", () => {
       });
   });
 });
+
+describe("GET /api/articles", () => {
+  test("Status: 200 responds with an array of article objects containing author, title, article_id, topic, created_at, votes and comment_count", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.articles).toEqual(expect.any(Array));
+        expect(Object.keys(body.articles[0])).toEqual(
+          expect.arrayContaining([
+            "article_id",
+            "title",
+            "topic",
+            "author",
+            "created_at",
+            "votes",
+            "comment_count",
+          ])
+        );
+      });
+  });
+});
+
+describe("GET /api/articles/:article_id/comments", () => {
+  test("Status:200 responds with an array of comments for the given article_id of which each comment should have comment_id, votes, created_at, author and body properties", () => {
+    return request(app)
+      .get("/api/articles/1/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toEqual(expect.any(Array));
+        expect(body.comments).toHaveLength(11);
+        body.comments.forEach((comment) => {
+          expect(comment.article_id).toBe(1);
+          expect(comment).toEqual(
+            expect.objectContaining({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+            })
+          );
+        });
+      });
+  });
+  test("Status:200 responds with an empty array if an existing article with no comments", () => {
+    return request(app)
+      .get("/api/articles/2/comments")
+      .expect(200)
+      .then(({ body }) => {
+        expect(body.comments).toHaveLength(0);
+      });
+  });
+  test("Status:404 sends an appropriate and error message when given a valid but non-existent id", () => {
+    return request(app)
+      .get("/api/articles/888/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Invalid article id");
+      });
+  });
+  test("Status:400 sends an appropriate and error message when given an invalid id", () => {
+    return request(app)
+      .get("/api/articles/invalid_id/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "Invalid ID request. Please enter a valid ID Number"
+        );
+      });
+  });
+});
