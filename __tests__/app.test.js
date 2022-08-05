@@ -3,6 +3,7 @@ const request = require("supertest");
 const db = require("../db/connection.js");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data");
+
 const { convertTimestampToDate } = require("../db/seeds/utils");
 
 afterAll(() => db.end());
@@ -156,6 +157,49 @@ describe("GET /api/articles", () => {
             })
           );
         });
+      });
+  });
+  test("Status:200 default sort_by criteria: created_at and default ORDER BY criteria: DESC descending", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at", { descending: true });
+      });
+  });
+  test("Status:200 sort by the passed query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=title")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("title", { descending: true });
+      });
+  });
+  test("Status:200 order by the passed query", () => {
+    return request(app)
+      .get("/api/articles?order_by=ASC")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        expect(articles).toBeSortedBy("created_at", { descending: false });
+      });
+  });
+  test("Status:200 filter topic by the passed query", () => {
+    return request(app)
+      .get("/api/articles?filter_topic_by=cats")
+      .expect(200)
+      .then(({ body: { articles } }) => {
+        console.log("here");
+        expect(articles).toHaveLength(1);
+      });
+  });
+  test("Status:404 sends an appropriate and error message when given an invalid sort_by query", () => {
+    return request(app)
+      .get("/api/articles?sort_by=key")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "sort by key does not exist. Please enter a valid sort by key"
+        );
       });
   });
 });

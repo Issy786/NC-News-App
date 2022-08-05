@@ -42,14 +42,40 @@ exports.selectUsers = () => {
   });
 };
 
-exports.selectArticles = () => {
-  return db
-    .query(
-      "SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, (SELECT COUNT(*) :: INT FROM comments WHERE comments.article_id = articles.article_id) AS comment_count FROM articles;"
-    )
-    .then(({ rows }) => {
-      return rows;
+exports.selectArticles = (
+  sortBy = "created_at",
+  orderBy = "DESC",
+  filterByTopic
+) => {
+  const valid_sort_by = [
+    "article_id",
+    "title",
+    "topic",
+    "author",
+    "votes",
+    "comment_count",
+    "created_at",
+  ];
+
+  if (!valid_sort_by.includes(sortBy)) {
+    return Promise.reject({
+      status: 404,
+      msg: "sort by key does not exist. Please enter a valid sort by key",
     });
+  }
+  let queryStr = `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, (SELECT COUNT(*) :: INT FROM comments WHERE comments.article_id = articles.article_id) AS comment_count FROM articles`;
+  let injectArr = [];
+
+  if (filterByTopic) {
+    queryStr += ` WHERE articles.topic = $1`;
+    injectArr.push(filterByTopic);
+  }
+
+  queryStr += ` ORDER BY ${sortBy} ${orderBy};`;
+
+  return db.query(queryStr, injectArr).then(({ rows }) => {
+    return rows;
+  });
 };
 
 exports.selectCommentsByArticleId = (article_id) => {

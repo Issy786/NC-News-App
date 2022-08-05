@@ -8,7 +8,6 @@ const {
   selectCommentsByArticleId,
   insertNewCommentToGivenArticleID,
   checkIfArticleExists,
-  selectAById,
 } = require("../models/models");
 
 exports.getTopics = (req, res, next) => {
@@ -47,7 +46,9 @@ exports.getUsers = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  selectArticles()
+  const { sort_by, order_by, filter_topic_by } = req.query;
+
+  selectArticles(sort_by, order_by, filter_topic_by)
     .then((articles) => {
       res.status(200).send({ articles });
     })
