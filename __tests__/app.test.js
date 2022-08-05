@@ -202,6 +202,16 @@ describe("GET /api/articles", () => {
         );
       });
   });
+  test("Status:404 sends an appropriate and error message when given an invalid topic query", () => {
+    return request(app)
+      .get("/api/articles?filter_topic_by=key")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "topic does not exist. Please enter a valid topic"
+        );
+      });
+  });
 });
 
 describe("GET /api/articles/:article_id/comments", () => {
@@ -304,6 +314,20 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.msg).toBe(
           "New comment not accepted. Please make sure you enter both username and body of the new comment"
         );
+      });
+  });
+});
+
+describe("DELETE /api/comments/:comment_id", () => {
+  test("responds with the status code: 204 - no content", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+  test("status:404 sends an appropriate and error message when given a valid but non-existent id", () => {
+    return request(app)
+      .delete("/api/comments/200")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Comment id does not exist");
       });
   });
 });
