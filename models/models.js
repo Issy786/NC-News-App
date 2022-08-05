@@ -57,6 +57,10 @@ exports.selectArticles = (
     "created_at",
   ];
 
+  const valid_order_by = ["ASC", "DESC"];
+
+  const valid_filter_topic_by = ["mitch", "cats"];
+
   if (!valid_sort_by.includes(sortBy)) {
     return Promise.reject({
       status: 404,
@@ -66,7 +70,12 @@ exports.selectArticles = (
   let queryStr = `SELECT articles.article_id, articles.title, articles.topic, articles.author, articles.created_at, articles.votes, (SELECT COUNT(*) :: INT FROM comments WHERE comments.article_id = articles.article_id) AS comment_count FROM articles`;
   let injectArr = [];
 
-  if (filterByTopic) {
+  if (filterByTopic && !valid_filter_topic_by.includes(filterByTopic)) {
+    return Promise.reject({
+      status: 404,
+      msg: "topic does not exist. Please enter a valid topic",
+    });
+  } else if (filterByTopic && valid_filter_topic_by.includes(filterByTopic)) {
     queryStr += ` WHERE articles.topic = $1`;
     injectArr.push(filterByTopic);
   }
@@ -114,5 +123,23 @@ exports.insertNewCommentToGivenArticleID = (article_id, newComment) => {
     )
     .then(({ rows }) => {
       return rows[0];
+    });
+};
+
+exports.removeCommentById = (comment_id) => {
+  return db
+    .query("DELETE FROM comments WHERE comment_id = $1 RETURNING *", [
+      comment_id,
+    ])
+    .then(({ rows }) => {
+      console.log(rows);
+      if (rows.length < 1) {
+        return Promise.reject({
+          status: 404,
+          msg: "Comment id does not exist",
+        });
+      } else {
+        return rows;
+      }
     });
 };
