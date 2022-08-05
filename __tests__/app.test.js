@@ -195,7 +195,7 @@ describe("GET /api/articles/:article_id/comments", () => {
       .get("/api/articles/888/comments")
       .expect(404)
       .then(({ body }) => {
-        expect(body.msg).toBe("Invalid article id");
+        expect(body.msg).toBe("Article id does not exist");
       });
   });
   test("Status:400 sends an appropriate and error message when given an invalid id", () => {
@@ -205,6 +205,60 @@ describe("GET /api/articles/:article_id/comments", () => {
       .then(({ body }) => {
         expect(body.msg).toBe(
           "Invalid ID request. Please enter a valid ID Number"
+        );
+      });
+  });
+});
+
+describe("POST /api/articles/:article_id/comments", () => {
+  test("Status:201 accepts an object with the properties username and body and inserts them as a new coment to the comments table ", () => {
+    const newComment = {
+      username: "butter_bridge",
+      body: "Hello World!",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toMatchObject({
+          body: "Hello World!",
+          votes: expect.any(Number),
+          author: "butter_bridge",
+          article_id: 1,
+          created_at: expect.any(String),
+        });
+      });
+  });
+  test("Status:404 sends an appropriate and error message when given a valid but non-existent id", () => {
+    return request(app)
+      .get("/api/articles/888/comments")
+      .expect(404)
+      .then(({ body }) => {
+        expect(body.msg).toBe("Article id does not exist");
+      });
+  });
+  test("Status:400 sends an appropriate and error message when given an invalid id", () => {
+    return request(app)
+      .get("/api/articles/invalid_id/comments")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "Invalid ID request. Please enter a valid ID Number"
+        );
+      });
+  });
+  test("Status:406 sends an appropriate and error message when passed with an request object with either property missing", () => {
+    const newComment = {
+      username: "butter_bridge",
+    };
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send(newComment)
+      .expect(406)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "New comment not accepted. Please make sure you enter both username and body of the new comment"
         );
       });
   });
