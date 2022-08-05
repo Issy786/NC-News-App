@@ -6,6 +6,7 @@ const {
   getArticleById,
   getArticles,
   getcommentsByArticleId,
+  postCommentToArticleId,
 } = require("./controllers/controllers");
 const app = express();
 
@@ -17,6 +18,7 @@ app.get("/api/articles", getArticles);
 app.get("/api/articles/:article_id", getArticleById);
 app.patch("/api/articles/:article_id", patchArticlesById);
 app.get("/api/articles/:article_id/comments", getcommentsByArticleId);
+app.post("/api/articles/:article_id/comments", postCommentToArticleId);
 
 app.get("/api/users", getUsers);
 
@@ -29,10 +31,7 @@ app.use((err, req, res, next) => {
     res
       .status(400)
       .send({ msg: "Invalid ID request. Please enter a valid ID Number" });
-  } else next(err);
-});
-
-app.use((err, req, res, next) => {
+  }
   res.status(err.status).send({ msg: err.msg });
 });
 

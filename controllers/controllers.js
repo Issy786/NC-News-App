@@ -6,7 +6,9 @@ const {
   selectArticleById,
   selectArticles,
   selectCommentsByArticleId,
-  selectArticleByIdForComments,
+  insertNewCommentToGivenArticleID,
+  checkIfArticleExists,
+  selectAById,
 } = require("../models/models");
 
 exports.getTopics = (req, res, next) => {
@@ -57,11 +59,24 @@ exports.getcommentsByArticleId = (req, res, next) => {
 
   Promise.all([
     selectCommentsByArticleId(article_id),
-    selectArticleByIdForComments(article_id),
+    checkIfArticleExists(article_id),
   ])
     .then(([comments]) => {
-      console.log(comments);
       res.status(200).send({ comments });
+    })
+    .catch(next);
+};
+
+exports.postCommentToArticleId = (req, res, next) => {
+  const { article_id } = req.params;
+  const newComment = req.body;
+
+  Promise.all([
+    insertNewCommentToGivenArticleID(article_id, newComment),
+    checkIfArticleExists(article_id),
+  ])
+    .then(([comment]) => {
+      res.status(201).send({ comment });
     })
     .catch(next);
 };

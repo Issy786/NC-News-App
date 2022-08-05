@@ -58,12 +58,11 @@ exports.selectCommentsByArticleId = (article_id) => {
       article_id,
     ])
     .then(({ rows }) => {
-      console.log(rows);
       return rows;
     });
 };
 
-exports.selectArticleByIdForComments = async (article_id) => {
+exports.checkIfArticleExists = async (article_id) => {
   const {
     rows: [article],
   } = await db.query("SELECT * FROM articles WHERE article_id = $1;", [
@@ -71,7 +70,23 @@ exports.selectArticleByIdForComments = async (article_id) => {
   ]);
 
   if (!article) {
-    return Promise.reject({ status: 404, msg: "Invalid article id" });
+    return Promise.reject({ status: 404, msg: "Article id does not exist" });
   }
-  return article;
+};
+
+exports.insertNewCommentToGivenArticleID = (article_id, newComment) => {
+  if (!newComment.username || !newComment.body) {
+    return Promise.reject({
+      status: 406,
+      msg: "New comment not accepted. Please make sure you enter both username and body of the new comment",
+    });
+  }
+  return db
+    .query(
+      "INSERT INTO comments (article_id, author, body) VALUES ($1, $2, $3) RETURNING*;",
+      [article_id, newComment.username, newComment.body]
+    )
+    .then(({ rows }) => {
+      return rows[0];
+    });
 };
