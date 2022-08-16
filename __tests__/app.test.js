@@ -188,7 +188,6 @@ describe("GET /api/articles", () => {
       .get("/api/articles?filter_topic_by=cats")
       .expect(200)
       .then(({ body: { articles } }) => {
-        console.log("here");
         expect(articles).toHaveLength(1);
       });
   });
@@ -328,6 +327,42 @@ describe("DELETE /api/comments/:comment_id", () => {
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe("Comment id does not exist");
+      });
+  });
+  test("Status:400 sends an appropriate and error message when given an invalid id", () => {
+    return request(app)
+      .delete("/api/comments/invalid_id")
+      .expect(400)
+      .then(({ body }) => {
+        expect(body.msg).toBe(
+          "Invalid ID request. Please enter a valid ID Number"
+        );
+      });
+  });
+});
+
+describe("GET /api", () => {
+  test("Status:200 responds with an object containing properties describing all the endpoints", () => {
+    return request(app)
+      .get("/api")
+      .expect(200)
+      .then(({ body }) => {
+        console.log(body.endPoints, "here");
+        const a = Object.keys(body.endPoints);
+        console.log(a);
+        expect(a).toEqual(
+          expect.arrayContaining([
+            "GET /api",
+            "GET /api/topics",
+            "GET /api/articles",
+            "GET /api/articles/:article_id",
+            "PATCH /api/articles/:article_id",
+            "GET /api/articles/:article_id/comments",
+            "POST /api/articles/:article_id/comments",
+            "GET /api/users",
+            "DELETE /api/comments/:comment_id",
+          ])
+        );
       });
   });
 });

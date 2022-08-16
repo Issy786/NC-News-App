@@ -1,4 +1,6 @@
 const db = require("../db/connection.js");
+const fs = require("fs/promises");
+// const api = require("../endpoints.json");
 
 exports.selectTopics = () => {
   return db.query("SELECT * FROM topics;").then(({ rows }) => {
@@ -132,7 +134,6 @@ exports.removeCommentById = (comment_id) => {
       comment_id,
     ])
     .then(({ rows }) => {
-      console.log(rows);
       if (rows.length < 1) {
         return Promise.reject({
           status: 404,
@@ -142,4 +143,11 @@ exports.removeCommentById = (comment_id) => {
         return rows;
       }
     });
+};
+
+exports.selectApi = () => {
+  return fs.readFile(`${__dirname}/../endpoints.json`, "utf-8").then((api) => {
+    const parsedApi = JSON.parse(api);
+    return parsedApi;
+  });
 };
