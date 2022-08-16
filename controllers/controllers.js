@@ -9,6 +9,7 @@ const {
   insertNewCommentToGivenArticleID,
   checkIfArticleExists,
   removeCommentById,
+  selectApi,
 } = require("../models/models");
 
 exports.getTopics = (req, res, next) => {
@@ -88,6 +89,15 @@ exports.deleteCommentById = (req, res, next) => {
   removeCommentById(comment_id)
     .then(() => {
       res.status(204).send();
+    })
+    .catch(next);
+};
+
+exports.getApi = (req, res, next) => {
+  selectApi()
+    .then((endPoints) => {
+      console.log(endPoints);
+      res.status(200).send({ endPoints: endPoints });
     })
     .catch(next);
 };
