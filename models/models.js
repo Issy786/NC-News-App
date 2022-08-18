@@ -61,7 +61,13 @@ exports.selectArticles = (
 
   const valid_order_by = ["ASC", "DESC"];
 
-  const valid_filter_topic_by = ["mitch", "cats"];
+  const valid_filter_topic_by = [
+    "mitch",
+    "cooking",
+    "football",
+    "coding",
+    "cats",
+  ];
 
   if (!valid_sort_by.includes(sortBy)) {
     return Promise.reject({
