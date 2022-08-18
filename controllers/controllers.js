@@ -96,7 +96,6 @@ exports.deleteCommentById = (req, res, next) => {
 exports.getApi = (req, res, next) => {
   selectApi()
     .then((endPoints) => {
-      console.log(endPoints);
       res.status(200).send({ endPoints: endPoints });
     })
     .catch(next);

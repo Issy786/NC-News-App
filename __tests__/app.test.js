@@ -347,10 +347,8 @@ describe("GET /api", () => {
       .get("/api")
       .expect(200)
       .then(({ body }) => {
-        console.log(body.endPoints, "here");
-        const a = Object.keys(body.endPoints);
-        console.log(a);
-        expect(a).toEqual(
+        const endPointsArr = Object.keys(body.endPoints);
+        expect(endPointsArr).toEqual(
           expect.arrayContaining([
             "GET /api",
             "GET /api/topics",
