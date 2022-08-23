@@ -48,9 +48,9 @@ exports.getUsers = (req, res, next) => {
 };
 
 exports.getArticles = (req, res, next) => {
-  const { sort_by, order_by, filter_topic_by } = req.query;
+  const { sort_by, order_by, topic } = req.query;
 
-  selectArticles(sort_by, order_by, filter_topic_by)
+  selectArticles(sort_by, order_by, topic)
     .then((articles) => {
       res.status(200).send({ articles });
     })

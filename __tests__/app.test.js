@@ -185,7 +185,7 @@ describe("GET /api/articles", () => {
   });
   test("Status:200 filter topic by the passed query", () => {
     return request(app)
-      .get("/api/articles?filter_topic_by=cats")
+      .get("/api/articles?topic=cats")
       .expect(200)
       .then(({ body: { articles } }) => {
         expect(articles).toHaveLength(1);
@@ -203,7 +203,7 @@ describe("GET /api/articles", () => {
   });
   test("Status:404 sends an appropriate and error message when given an invalid topic query", () => {
     return request(app)
-      .get("/api/articles?filter_topic_by=key")
+      .get("/api/articles?topic=key")
       .expect(404)
       .then(({ body }) => {
         expect(body.msg).toBe(
